@@ -3,28 +3,29 @@
 START=99
 
 start() {
-    logger  "开机运行脚本" "运行最大分区根目录start.sh"
-    logger  "开机运行脚本" "Finding the largest partition in /mnt..."
+    logger  "开机运行脚本" "正在查找已挂载的最大分区"
     # 找到 /mnt 下最大的分区
-    LARGEST_PARTITION=$(ls -1 /mnt | xargs -I {} du -s /mnt/{} | sort -nr | head -n 1 | awk '{print $2}')
+    LARGEST_PARTITION=$(ls -1 /mnt | while read dir; do
+        du -s "/mnt/$dir"
+    done | sort -nr | head -n 1 | awk '{print $2}')
     
     if [ -z "$LARGEST_PARTITION" ]; then
-        logger  "开机运行脚本" "No partitions found in /mnt."
+        logger  "开机运行脚本" "/mnt中没找到"
         return 1
     fi
 
-    logger  "开机运行脚本" "Largest partition found: $LARGEST_PARTITION"
+    logger  "开机运行脚本" "已找到 $LARGEST_PARTITION"
     # 检查是否存在 start.sh 脚本
     START_SCRIPT="$LARGEST_PARTITION/start.sh"
     if [ -f "$START_SCRIPT" ] && [ -x "$START_SCRIPT" ]; then
-        logger  "开机运行脚本" "Running $START_SCRIPT..."
+        logger  "开机运行脚本" "正在运行 $START_SCRIPT..."
         $START_SCRIPT
     else
-        logger  "开机运行脚本" " 未找到 start.sh not found or not executable in $LARGEST_PARTITION."
+        logger  "开机运行脚本" "start.sh 没找到或没运行成功 $LARGEST_PARTITION."
     fi
 }
 
 stop() {
-    logger  "开机运行脚本" "Stopping my script..."
+    echo "Stopping my script..."
     # 在这里添加你的停止命令
 }

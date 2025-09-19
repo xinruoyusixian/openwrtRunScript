@@ -3,27 +3,28 @@
 START=99
 
 start() {
-    echo "Finding the largest partition in /mnt..."
+    logger  "开机运行脚本" "运行最大分区根目录start.sh"
+    logger  "开机运行脚本" "Finding the largest partition in /mnt..."
     # 找到 /mnt 下最大的分区
     LARGEST_PARTITION=$(ls -1 /mnt | xargs -I {} du -s /mnt/{} | sort -nr | head -n 1 | awk '{print $2}')
     
     if [ -z "$LARGEST_PARTITION" ]; then
-        echo "No partitions found in /mnt."
+        logger  "开机运行脚本" "No partitions found in /mnt."
         return 1
     fi
 
-    echo "Largest partition found: $LARGEST_PARTITION"
+    logger  "开机运行脚本" "Largest partition found: $LARGEST_PARTITION"
     # 检查是否存在 start.sh 脚本
     START_SCRIPT="$LARGEST_PARTITION/start.sh"
     if [ -f "$START_SCRIPT" ] && [ -x "$START_SCRIPT" ]; then
-        echo "Running $START_SCRIPT..."
+        logger  "开机运行脚本" "Running $START_SCRIPT..."
         $START_SCRIPT
     else
-        echo "start.sh not found or not executable in $LARGEST_PARTITION."
+        logger  "开机运行脚本" " 未找到 start.sh not found or not executable in $LARGEST_PARTITION."
     fi
 }
 
 stop() {
-    echo "Stopping my script..."
+    logger  "开机运行脚本" "Stopping my script..."
     # 在这里添加你的停止命令
 }
